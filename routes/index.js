@@ -21,6 +21,11 @@ router.get("/users/new", function(req ,res) {
 });
 
 router.post('/users', function(req, res) {
+	if (!(req.body && req.body.email && req.body.password)) {
+		res.render("new");
+		return;
+	}
+	
 	var user = new User({
 		email: req.body.email
 	});
@@ -40,6 +45,11 @@ router.get('/session/new', function(req, res) {
 
 router.post('/session', function(req, res) {
 	console.log("in POST session");
+	console.log()
+	if (!(req.body && req.body.email && req.body.password)) {
+		res.render("session_new");
+		return;
+	}
 	
 	var email = req.body.email;
 	var password = req.body.password;
@@ -47,9 +57,9 @@ router.post('/session', function(req, res) {
 	User.findOne({email: email}, function(err, user) {
 		if (!user) {
 			console.log("No user found!");
-			res.render("session_new");
-		}
-		
+			res.redirect("session_new");
+			return;
+		} 
 		if (user.veryfyPassword(password)) {
 			user.resetToken(function(err) {
 				console.log(user.sessionToken);
